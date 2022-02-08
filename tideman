@@ -215,22 +215,21 @@ void lock_pairs(void)
         locked[pairs[i].winner][pairs[i].loser] = true;
         locked[pairs[i].loser][pairs[i].winner] = false;
 
-        for (int j = 0; j < i; j++)
+        for (int j = 0; j < i + 1; j++)
         {
             //Backtrack through the pairs.
             if (backtrace == pairs[j].loser)
             {
                 backtrace = pairs[j].winner;
+                j = 0;
             }
 
             //If the connecting candidate(AKA the loser) has previously appeared as a winner, then there is a cycle.
             if (backtrace == pairs[i].loser)
             {
                 locked[pairs[i].winner][pairs[i].loser] = false;
-                printf("Cycle detected.\n");
+                break;
             }
-            printf("%i\n", backtrace);
-            printf("%i\n", pairs[i].loser);
         }
     }
     return;
@@ -240,5 +239,62 @@ void lock_pairs(void)
 void print_winner(void)
 {
     // TODO
+    for (int i = 0; i < candidate_count; i++)
+    {
+        int loss_count = 0;
+
+        for (int j = 0; j < candidate_count; j++)
+        {
+            if (locked[j][i] == true)
+            {
+                loss_count++;
+            }
+        }
+
+        if (loss_count == 0)
+        {
+            printf("%s\n", candidates[i]);
+        }
+    }
+
     return;
 }
+
+
+// for (int i = 0; i < candidate_count; i++)
+// {
+//     locked[i][i] = false;
+//     locked[pairs[i].winner][pairs[i].loser] = true;
+//     locked[pairs[i].loser][pairs[i].winner] = false;
+//     printf("%i\n", pairs[i].winner);
+//     printf("%i\n", pairs[i].loser);
+
+//     for (int j = i; j > 0; j--)
+//     {
+//         if(pairs[j].winner == pairs[i].loser)
+//         {
+//             locked[pairs[i].winner][pairs[i].loser] = false;
+//         }
+//     }
+// }
+
+
+:) tideman.c exists
+:) tideman compiles
+:) vote returns true when given name of candidate
+:) vote returns false when given name of invalid candidate
+:) vote correctly sets rank for first preference
+:) vote correctly sets rank for all preferences
+:) record_preferences correctly sets preferences for first voter
+:) record_preferences correctly sets preferences for all voters
+:) add_pairs generates correct pair count when no ties
+:) add_pairs generates correct pair count when ties exist
+:) add_pairs fills pairs array with winning pairs
+:) add_pairs does not fill pairs array with losing pairs
+:) sort_pairs sorts pairs of candidates by margin of victory
+:) lock_pairs locks all pairs when no cycles
+:) lock_pairs skips final pair if it creates cycle
+:( lock_pairs skips middle pair if it creates a cycle
+    lock_pairs did not correctly lock all non-cyclical pairs
+:) print_winner prints winner of election when one candidate wins over all others
+:) print_winner prints winner of election when some pairs are tied
